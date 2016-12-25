@@ -18,7 +18,7 @@ angular.module("hue", []).service "hue", [
         return deferred.promise
       if config.username == ""
         $log.error "Error in setup: Username has to be set"
-        deferred.reject
+        deferred.reject()
         return deferred.promise
       if config.apiUrl != ""
         isReady = true
@@ -47,9 +47,9 @@ angular.module("hue", []).service "hue", [
     _put = (name, url, data) ->
       deferred = $q.defer()
       $http.put(url, data)
-        .success (response) ->
+        .then (response) ->
           _responseHandler name, response, deferred
-        .error (response) ->
+        .catch (response) ->
           $log.error "Error: #{name}", response
           deferred.reject
       deferred.promise
@@ -57,9 +57,9 @@ angular.module("hue", []).service "hue", [
     _post = (name, url, data) ->
       deferred = $q.defer()
       $http.post(url, data)
-        .success (response) ->
+        .then (response) ->
           _responseHandler name, response, deferred
-        .error (response) ->
+        .catch (response) ->
           $log.error "Error: #{name}", response
           deferred.reject
       deferred.promise
@@ -67,9 +67,9 @@ angular.module("hue", []).service "hue", [
     _del = (name, url) ->
       deferred = $q.defer()
       $http.delete(url)
-        .success (response) ->
+        .then (response) ->
           _responseHandler name, response, deferred
-        .error (response) ->
+        .catch (response) ->
           $log.error "Error: #{name}", response
           deferred.reject
       deferred.promise
@@ -77,9 +77,9 @@ angular.module("hue", []).service "hue", [
     _get = (name, url) ->
       deferred = $q.defer()
       $http.get(url)
-        .success (response) ->
+        .then (response) ->
           _responseHandler name, response, deferred
-        .error (response) ->
+        .catch (response) ->
           $log.error "#{name}", response
           deferred.reject
       deferred.promise
@@ -118,7 +118,7 @@ angular.module("hue", []).service "hue", [
 
     buildApiUrl = () ->
       "http://#{config.bridgeIP}/api/#{config.username}"
-    
+
     @getBridgeIP = ->
       _setup().then ->
         config.bridgeIP

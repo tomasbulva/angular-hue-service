@@ -17,7 +17,7 @@ angular.module("hue", []).service("hue", [
       }
       if (config.username === "") {
         $log.error("Error in setup: Username has to be set");
-        deferred.reject;
+        deferred.reject();
         return deferred.promise;
       }
       if (config.apiUrl !== "") {
@@ -50,9 +50,9 @@ angular.module("hue", []).service("hue", [
     _put = function(name, url, data) {
       var deferred;
       deferred = $q.defer();
-      $http.put(url, data).success(function(response) {
+      $http.put(url, data).then(function(response) {
         return _responseHandler(name, response, deferred);
-      }).error(function(response) {
+      })["catch"](function(response) {
         $log.error("Error: " + name, response);
         return deferred.reject;
       });
@@ -61,9 +61,9 @@ angular.module("hue", []).service("hue", [
     _post = function(name, url, data) {
       var deferred;
       deferred = $q.defer();
-      $http.post(url, data).success(function(response) {
+      $http.post(url, data).then(function(response) {
         return _responseHandler(name, response, deferred);
-      }).error(function(response) {
+      })["catch"](function(response) {
         $log.error("Error: " + name, response);
         return deferred.reject;
       });
@@ -72,9 +72,9 @@ angular.module("hue", []).service("hue", [
     _del = function(name, url) {
       var deferred;
       deferred = $q.defer();
-      $http["delete"](url).success(function(response) {
+      $http["delete"](url).then(function(response) {
         return _responseHandler(name, response, deferred);
-      }).error(function(response) {
+      })["catch"](function(response) {
         $log.error("Error: " + name, response);
         return deferred.reject;
       });
@@ -83,9 +83,9 @@ angular.module("hue", []).service("hue", [
     _get = function(name, url) {
       var deferred;
       deferred = $q.defer();
-      $http.get(url).success(function(response) {
+      $http.get(url).then(function(response) {
         return _responseHandler(name, response, deferred);
-      }).error(function(response) {
+      })["catch"](function(response) {
         $log.error("" + name, response);
         return deferred.reject;
       });
