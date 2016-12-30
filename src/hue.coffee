@@ -46,6 +46,7 @@ angular.module("hue", []).service "hue", [
 
     _put = (name, url, data) ->
       deferred = $q.defer()
+      # $log.debug "sending to url #{url}:", data
       $http.put(url, data)
         .then (response) ->
           _responseHandler name, response, deferred
@@ -56,6 +57,7 @@ angular.module("hue", []).service "hue", [
 
     _post = (name, url, data) ->
       deferred = $q.defer()
+      # $log.debug "sending to url #{url}:", data
       $http.post(url, data)
         .then (response) ->
           _responseHandler name, response, deferred
@@ -85,18 +87,21 @@ angular.module("hue", []).service "hue", [
       deferred.promise
 
     _responseHandler = (name, response, deferred) ->
-      if response[0]? && response[0].error
-        $log.error "#{name}", response
+      if response.data[0]? && response.data[0].error
+        $log.error "#{name}", response.data[0].error.description, response
         deferred.reject
       else
         $log.debug "Response of #{name}:", response
-        deferred.resolve response
+        deferred.resolve response.data
 
     _buildUrl = (urlParts=[]) ->
       url = config.apiUrl
-      for part in urlParts
-        url = url + "/#{part}"
-      return url
+      if urlParts.length == 1 && urlParts[0] == 'api'
+        return "http://#{config.bridgeIP}/api/"
+      else
+        for part in urlParts
+          url = url + "/#{part}"
+        return url
 
     _apiCall = (method, path=[], params=null) ->
       name = method + path.join("/")

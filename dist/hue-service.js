@@ -92,12 +92,12 @@ angular.module("hue", []).service("hue", [
       return deferred.promise;
     };
     _responseHandler = function(name, response, deferred) {
-      if ((response[0] != null) && response[0].error) {
-        $log.error("" + name, response);
+      if ((response.data[0] != null) && response.data[0].error) {
+        $log.error("" + name, response.data[0].error.description, response);
         return deferred.reject;
       } else {
         $log.debug("Response of " + name + ":", response);
-        return deferred.resolve(response);
+        return deferred.resolve(response.data);
       }
     };
     _buildUrl = function(urlParts) {
@@ -106,11 +106,15 @@ angular.module("hue", []).service("hue", [
         urlParts = [];
       }
       url = config.apiUrl;
-      for (_i = 0, _len = urlParts.length; _i < _len; _i++) {
-        part = urlParts[_i];
-        url = url + ("/" + part);
+      if (urlParts.length === 1 && urlParts[0] === 'api') {
+        return "http://" + config.bridgeIP + "/api/";
+      } else {
+        for (_i = 0, _len = urlParts.length; _i < _len; _i++) {
+          part = urlParts[_i];
+          url = url + ("/" + part);
+        }
+        return url;
       }
-      return url;
     };
     _apiCall = function(method, path, params) {
       var name, url;
