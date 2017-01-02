@@ -50,6 +50,7 @@ angular.module("hue", []).service("hue", [
     _put = function(name, url, data) {
       var deferred;
       deferred = $q.defer();
+      $log.debug("debug: " + url, data);
       $http.put(url, data).then(function(response) {
         return _responseHandler(name, response, deferred);
       })["catch"](function(response) {
@@ -61,6 +62,7 @@ angular.module("hue", []).service("hue", [
     _post = function(name, url, data) {
       var deferred;
       deferred = $q.defer();
+      $log.debug("debug: " + url, data);
       $http.post(url, data).then(function(response) {
         return _responseHandler(name, response, deferred);
       })["catch"](function(response) {
