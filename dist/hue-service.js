@@ -11,35 +11,78 @@ angular.module("hue", []).service("hue", [
     _setup = function() {
       var deferred;
       deferred = $q.defer();
+
+      $log.debug("_setup debug: ", config);
+
+      var apiUsr = config.apiUrl.split('/').pop();
+
+      console.log('apiUsr',apiUsr);
+
+      if ( apiUsr !== config.username ) {
+
+        console.log('changing newUser');
+        
+        getBridgeNupnp().then(function(data) {
+
+          if (data[0] !== null) {
+            config.bridgeIP = data[0].internalipaddress;
+            config.apiUrl = buildApiUrl();
+
+            console.log('getBridgeNupnp config',config);
+
+            isReady = true;
+            deferred.resolve();
+          }
+
+        });
+      }
+
       if (isReady) {
+
         deferred.resolve();
         return deferred.promise;
       }
+      // if (config.username !== "") {
+      //   config.apiUrl = buildApiUrl();
+      // }
       if (config.username === "") {
         $log.error("Error in setup: Username has to be set");
         deferred.reject();
         return deferred.promise;
       }
+
       if (config.apiUrl !== "") {
         isReady = true;
         deferred.resolve();
         return deferred.promise;
       }
+
       if (config.bridgeIP !== "") {
         config.apiUrl = buildApiUrl();
         isReady = true;
         deferred.resolve();
-      } else {
+      }
+      else {
+
+
+
         getBridgeNupnp().then(function(data) {
-          if (data[0] != null) {
+
+          if (data[0] !== null) {
             config.bridgeIP = data[0].internalipaddress;
             config.apiUrl = buildApiUrl();
+
+            console.log('getBridgeNupnp config',config);
+
             isReady = true;
             return deferred.resolve();
-          } else {
+          }
+          else {
+
             $log.error("Error in setup: Returned data from nupnp is empty. Is there a hue bridge present in this network?");
             return deferred.reject;
           }
+
         }, function(error) {
           $log.error("Error in setup: " + error);
           return deferred.reject;
@@ -50,7 +93,7 @@ angular.module("hue", []).service("hue", [
     _put = function(name, url, data) {
       var deferred;
       deferred = $q.defer();
-      $log.debug("debug: " + url, data);
+      $log.debug("debug: " + url, data, name);
       $http.put(url, data).then(function(response) {
         return _responseHandler(name, response, deferred);
       })["catch"](function(response) {
@@ -85,6 +128,7 @@ angular.module("hue", []).service("hue", [
     _get = function(name, url) {
       var deferred;
       deferred = $q.defer();
+      $log.debug("debug: " + url, name);
       $http.get(url).then(function(response) {
         return _responseHandler(name, response, deferred);
       })["catch"](function(response) {
@@ -103,6 +147,9 @@ angular.module("hue", []).service("hue", [
       }
     };
     _buildUrl = function(urlParts) {
+
+      $log.debug("_buildUrl debug: ", urlParts, config);
+
       var part, url, _i, _len;
       if (urlParts == null) {
         urlParts = [];
@@ -119,11 +166,14 @@ angular.module("hue", []).service("hue", [
       }
     };
     _apiCall = function(method, path, params) {
+
+      $log.debug("_apiCall debug: ", method, path, params);
+
       var name, url;
-      if (path == null) {
+      if (path === null) {
         path = [];
       }
-      if (params == null) {
+      if (params === null) {
         params = null;
       }
       name = method + path.join("/");
